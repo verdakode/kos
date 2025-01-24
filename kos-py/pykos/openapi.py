@@ -26,6 +26,10 @@ class ActuatorResponse(BaseModel):
     velocity: float = Field(..., description="Current velocity")
     torque: float = Field(..., description="Current torque")
 
+class CalibrationMetadata(BaseModel):
+    """Calibration metadata model."""
+    status: str = Field(..., description="Current calibration status")
+
 def generate_docs(output_path: str = "docs/openapi.json"):
     """Generate OpenAPI documentation JSON file."""
     openapi_spec = app.openapi()
@@ -35,6 +39,10 @@ def generate_docs(output_path: str = "docs/openapi.json"):
         "samples-languages": ["python"],
         "explorer-enabled": True,
         "categories": [
+            {
+                "name": "Setup",
+                "description": "Client initialization and setup"
+            },
             {
                 "name": "IMU",
                 "description": "IMU sensor operations"
@@ -52,57 +60,101 @@ def generate_docs(output_path: str = "docs/openapi.json"):
     if "schemas" not in openapi_spec["components"]:
         openapi_spec["components"]["schemas"] = {}
     
-    # Add Python method documentation instead of HTTP paths
+    # Add Python method documentation
     openapi_spec["paths"] = {
-        "/kos.get_imu_data": {
-            "get": {
-                "operationId": "get_imu_data",
-                "tags": ["IMU"],
-                "summary": "Get IMU Data",
-                "description": "Get IMU sensor data",
+        "/KOS.__init__": {
+            "post": {
+                "operationId": "initialize",
+                "tags": ["Setup"],
+                "summary": "Initialize KOS Client",
+                "description": "Create a new KOS client instance",
                 "x-readme": {
                     "code-samples": [
                         {
                             "language": "python",
-                            "code": "kos = KOS()\ndata = kos.get_imu_data()"
+                            "code": "# Connect to local KOS instance\nkos = KOS()\n\n# Connect to remote KOS instance\nkos = KOS(ip='192.168.1.100', port=50051)"
                         }
                     ]
-                },
-                "responses": {
-                    "200": {
-                        "description": "Current IMU sensor readings",
-                        "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/IMUResponse"}
-                            }
-                        }
-                    }
                 }
             }
         },
-        "/kos.get_actuator_state": {
+        "/imu/values": {
             "get": {
-                "operationId": "get_actuator_state",
-                "tags": ["Actuator"],
-                "summary": "Get Actuator State",
-                "description": "Get current actuator state",
+                "operationId": "get_imu_values",
+                "tags": ["IMU"],
+                "summary": "Get IMU Values",
+                "description": "Get the latest IMU sensor values including acceleration and angular velocity",
                 "x-readme": {
                     "code-samples": [
                         {
                             "language": "python",
-                            "code": "kos = KOS()\nstate = kos.get_actuator_state()"
+                            "code": "values = kos.imu.get_imu_values()"
                         }
                     ]
-                },
-                "responses": {
-                    "200": {
-                        "description": "Current actuator state",
-                        "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ActuatorResponse"}
-                            }
+                }
+            }
+        },
+        "/imu/quaternion": {
+            "get": {
+                "operationId": "get_quaternion",
+                "tags": ["IMU"],
+                "summary": "Get Quaternion",
+                "description": "Get the latest quaternion orientation",
+                "x-readme": {
+                    "code-samples": [
+                        {
+                            "language": "python",
+                            "code": "quat = kos.imu.get_quaternion()"
                         }
-                    }
+                    ]
+                }
+            }
+        },
+        "/imu/zero": {
+            "post": {
+                "operationId": "zero_imu",
+                "tags": ["IMU"],
+                "summary": "Zero IMU",
+                "description": "Zero the IMU with optional parameters",
+                "x-readme": {
+                    "code-samples": [
+                        {
+                            "language": "python",
+                            "code": "# Basic zeroing\nkos.imu.zero()\n\n# Advanced zeroing\nkos.imu.zero(\n    duration=2.0,\n    max_retries=3,\n    max_angular_error=0.1\n)"
+                        }
+                    ]
+                }
+            }
+        },
+        "/actuator/calibrate": {
+            "post": {
+                "operationId": "calibrate_actuator",
+                "tags": ["Actuator"],
+                "summary": "Calibrate Actuator",
+                "description": "Calibrate a specific actuator",
+                "x-readme": {
+                    "code-samples": [
+                        {
+                            "language": "python",
+                            "code": "metadata = kos.actuator.calibrate(actuator_id=1)"
+                        }
+                    ]
+                }
+            }
+        },
+        "/actuator/command": {
+            "post": {
+                "operationId": "command_actuators",
+                "tags": ["Actuator"],
+                "summary": "Command Actuators",
+                "description": "Send commands to multiple actuators",
+                "x-readme": {
+                    "code-samples": [
+                        {
+                            "language": "python",
+                            "code": "commands = [\n    {\"actuator_id\": 1, \"position\": 1.57},\n    {\"actuator_id\": 2, \"torque\": 0.5}\n]\nkos.actuator.command_actuators(commands)"
+                        }
+                    ]
                 }
             }
         }
@@ -111,7 +163,8 @@ def generate_docs(output_path: str = "docs/openapi.json"):
     # Add schemas
     openapi_spec["components"]["schemas"].update({
         "IMUResponse": IMUResponse.model_json_schema(),
-        "ActuatorResponse": ActuatorResponse.model_json_schema()
+        "ActuatorResponse": ActuatorResponse.model_json_schema(),
+        "CalibrationMetadata": CalibrationMetadata.model_json_schema()
     })
     
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
