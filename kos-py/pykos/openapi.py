@@ -46,7 +46,7 @@ def generate_docs(output_path: str = "docs/openapi.json"):
         ]
     }
     
-    # Initialize components and schemas if they don't exist
+    # Initialize components and schemas
     if "components" not in openapi_spec:
         openapi_spec["components"] = {}
     if "schemas" not in openapi_spec["components"]:
@@ -72,27 +72,53 @@ def generate_docs(output_path: str = "docs/openapi.json"):
                 }
             }
         },
-        "/imu/quaternion": {
-            "get": {
-                "operationId": "getQuaternion",
+        "/imu/calibrate": {
+            "post": {
+                "operationId": "calibrateIMU",
                 "tags": ["IMU"],
-                "summary": "Get Quaternion",
-                "description": "Get the latest quaternion orientation",
+                "summary": "Calibrate IMU",
+                "description": "Start IMU calibration process",
                 "responses": {
                     "200": {
-                        "description": "Current quaternion orientation",
+                        "description": "Calibration started successfully"
+                    }
+                }
+            }
+        },
+        "/actuator/state": {
+            "get": {
+                "operationId": "getActuatorState",
+                "tags": ["Actuator"],
+                "summary": "Get Actuator State",
+                "description": "Get current actuator state",
+                "responses": {
+                    "200": {
+                        "description": "Current actuator state",
                         "content": {
                             "application/json": {
-                                "schema": {"$ref": "#/components/schemas/IMUResponse"}
+                                "schema": {"$ref": "#/components/schemas/ActuatorResponse"}
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/actuator/command": {
+            "post": {
+                "operationId": "commandActuators",
+                "tags": ["Actuator"],
+                "summary": "Command Actuators",
+                "description": "Send commands to multiple actuators",
+                "responses": {
+                    "200": {
+                        "description": "Commands sent successfully"
                     }
                 }
             }
         }
     }
     
-    # Add all models from IMU and Actuator services
+    # Add schemas
     openapi_spec["components"]["schemas"].update({
         "IMUResponse": IMUResponse.model_json_schema(),
         "ActuatorResponse": ActuatorResponse.model_json_schema()
