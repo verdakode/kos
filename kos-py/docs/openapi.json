@@ -24,6 +24,7 @@
   "paths": {
     "/imu/values": {
       "get": {
+        "operationId": "getIMUValues",
         "tags": [
           "IMU"
         ],
@@ -45,6 +46,7 @@
     },
     "/imu/quaternion": {
       "get": {
+        "operationId": "getQuaternion",
         "tags": [
           "IMU"
         ],
@@ -63,100 +65,72 @@
           }
         }
       }
-    },
-    "/actuator/state": {
-      "get": {
-        "tags": [
-          "Actuator"
-        ],
-        "summary": "Get Actuator State",
-        "description": "Get current actuator state",
-        "responses": {
-          "200": {
-            "description": "Current actuator state",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActuatorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/actuator/command": {
-      "post": {
-        "tags": [
-          "Actuator"
-        ],
-        "summary": "Command Actuators",
-        "description": "Send commands to multiple actuators",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/ActuatorCommandModel"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Commands sent successfully"
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
       "IMUResponse": {
-        "type": "object",
+        "description": "IMU service response model.",
         "properties": {
           "acceleration": {
-            "type": "array",
+            "description": "Acceleration values in m/s^2",
             "items": {
               "type": "number"
             },
-            "description": "Acceleration values in m/s^2"
+            "title": "Acceleration",
+            "type": "array"
           },
           "angular_velocity": {
-            "type": "array",
+            "description": "Angular velocity values in rad/s",
             "items": {
               "type": "number"
             },
-            "description": "Angular velocity values in rad/s"
+            "title": "Angular Velocity",
+            "type": "array"
           },
           "orientation": {
-            "type": "array",
+            "description": "Orientation quaternion",
             "items": {
               "type": "number"
             },
-            "description": "Orientation quaternion"
+            "title": "Orientation",
+            "type": "array"
           }
-        }
+        },
+        "required": [
+          "acceleration",
+          "angular_velocity",
+          "orientation"
+        ],
+        "title": "IMUResponse",
+        "type": "object"
       },
       "ActuatorResponse": {
-        "type": "object",
+        "description": "Actuator service response model.",
         "properties": {
           "position": {
-            "type": "number",
-            "description": "Current position"
+            "description": "Current position",
+            "title": "Position",
+            "type": "number"
           },
           "velocity": {
-            "type": "number",
-            "description": "Current velocity"
+            "description": "Current velocity",
+            "title": "Velocity",
+            "type": "number"
           },
           "torque": {
-            "type": "number",
-            "description": "Current torque"
+            "description": "Current torque",
+            "title": "Torque",
+            "type": "number"
           }
-        }
+        },
+        "required": [
+          "position",
+          "velocity",
+          "torque"
+        ],
+        "title": "ActuatorResponse",
+        "type": "object"
       }
     }
   }

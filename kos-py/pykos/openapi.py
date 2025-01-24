@@ -27,11 +27,7 @@ class ActuatorResponse(BaseModel):
     torque: float = Field(..., description="Current torque")
 
 def generate_docs(output_path: str = "docs/openapi.json"):
-    """Generate OpenAPI documentation JSON file.
-    
-    Args:
-        output_path: Path where the OpenAPI JSON file should be saved
-    """
+    """Generate OpenAPI documentation JSON file."""
     openapi_spec = app.openapi()
     
     # Add readme.io specific metadata
@@ -50,55 +46,17 @@ def generate_docs(output_path: str = "docs/openapi.json"):
         ]
     }
     
-    # Add components section if it doesn't exist
+    # Initialize components and schemas if they don't exist
     if "components" not in openapi_spec:
-        openapi_spec["components"] = {"schemas": {}}
+        openapi_spec["components"] = {}
+    if "schemas" not in openapi_spec["components"]:
+        openapi_spec["components"]["schemas"] = {}
     
-    # Add all models to the components/schemas section
-    openapi_spec["components"]["schemas"].update({
-        "IMUResponse": {
-            "type": "object",
-            "properties": {
-                "acceleration": {
-                    "type": "array",
-                    "items": {"type": "number"},
-                    "description": "Acceleration values in m/s^2"
-                },
-                "angular_velocity": {
-                    "type": "array",
-                    "items": {"type": "number"},
-                    "description": "Angular velocity values in rad/s"
-                },
-                "orientation": {
-                    "type": "array",
-                    "items": {"type": "number"},
-                    "description": "Orientation quaternion"
-                }
-            }
-        },
-        "ActuatorResponse": {
-            "type": "object",
-            "properties": {
-                "position": {
-                    "type": "number",
-                    "description": "Current position"
-                },
-                "velocity": {
-                    "type": "number",
-                    "description": "Current velocity"
-                },
-                "torque": {
-                    "type": "number",
-                    "description": "Current torque"
-                }
-            }
-        }
-    })
-    
-    # Add paths for the API endpoints
+    # Add paths for all available endpoints
     openapi_spec["paths"] = {
         "/imu/values": {
             "get": {
+                "operationId": "getIMUValues",
                 "tags": ["IMU"],
                 "summary": "Get IMU Values",
                 "description": "Get the latest IMU sensor values",
@@ -116,6 +74,7 @@ def generate_docs(output_path: str = "docs/openapi.json"):
         },
         "/imu/quaternion": {
             "get": {
+                "operationId": "getQuaternion",
                 "tags": ["IMU"],
                 "summary": "Get Quaternion",
                 "description": "Get the latest quaternion orientation",
@@ -130,48 +89,14 @@ def generate_docs(output_path: str = "docs/openapi.json"):
                     }
                 }
             }
-        },
-        "/actuator/state": {
-            "get": {
-                "tags": ["Actuator"],
-                "summary": "Get Actuator State",
-                "description": "Get current actuator state",
-                "responses": {
-                    "200": {
-                        "description": "Current actuator state",
-                        "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ActuatorResponse"}
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/actuator/command": {
-            "post": {
-                "tags": ["Actuator"],
-                "summary": "Command Actuators",
-                "description": "Send commands to multiple actuators",
-                "requestBody": {
-                    "required": True,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "array",
-                                "items": {"$ref": "#/components/schemas/ActuatorCommandModel"}
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Commands sent successfully"
-                    }
-                }
-            }
         }
     }
+    
+    # Add all models from IMU and Actuator services
+    openapi_spec["components"]["schemas"].update({
+        "IMUResponse": IMUResponse.model_json_schema(),
+        "ActuatorResponse": ActuatorResponse.model_json_schema()
+    })
     
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, 'w') as f:
