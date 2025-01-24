@@ -52,14 +52,22 @@ def generate_docs(output_path: str = "docs/openapi.json"):
     if "schemas" not in openapi_spec["components"]:
         openapi_spec["components"]["schemas"] = {}
     
-    # Add paths for all available endpoints
+    # Add Python method documentation instead of HTTP paths
     openapi_spec["paths"] = {
-        "/imu/values": {
+        "/kos.get_imu_data": {
             "get": {
-                "operationId": "getIMUValues",
+                "operationId": "get_imu_data",
                 "tags": ["IMU"],
-                "summary": "Get IMU Values",
-                "description": "Get the latest IMU sensor values",
+                "summary": "Get IMU Data",
+                "description": "Get IMU sensor data",
+                "x-readme": {
+                    "code-samples": [
+                        {
+                            "language": "python",
+                            "code": "kos = KOS()\ndata = kos.get_imu_data()"
+                        }
+                    ]
+                },
                 "responses": {
                     "200": {
                         "description": "Current IMU sensor readings",
@@ -72,25 +80,20 @@ def generate_docs(output_path: str = "docs/openapi.json"):
                 }
             }
         },
-        "/imu/calibrate": {
-            "post": {
-                "operationId": "calibrateIMU",
-                "tags": ["IMU"],
-                "summary": "Calibrate IMU",
-                "description": "Start IMU calibration process",
-                "responses": {
-                    "200": {
-                        "description": "Calibration started successfully"
-                    }
-                }
-            }
-        },
-        "/actuator/state": {
+        "/kos.get_actuator_state": {
             "get": {
-                "operationId": "getActuatorState",
+                "operationId": "get_actuator_state",
                 "tags": ["Actuator"],
                 "summary": "Get Actuator State",
                 "description": "Get current actuator state",
+                "x-readme": {
+                    "code-samples": [
+                        {
+                            "language": "python",
+                            "code": "kos = KOS()\nstate = kos.get_actuator_state()"
+                        }
+                    ]
+                },
                 "responses": {
                     "200": {
                         "description": "Current actuator state",
@@ -99,19 +102,6 @@ def generate_docs(output_path: str = "docs/openapi.json"):
                                 "schema": {"$ref": "#/components/schemas/ActuatorResponse"}
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/actuator/command": {
-            "post": {
-                "operationId": "commandActuators",
-                "tags": ["Actuator"],
-                "summary": "Command Actuators",
-                "description": "Send commands to multiple actuators",
-                "responses": {
-                    "200": {
-                        "description": "Commands sent successfully"
                     }
                 }
             }
