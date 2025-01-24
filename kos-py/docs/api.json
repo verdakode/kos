@@ -1,0 +1,130 @@
+{
+  "title": "PyKOS Python Client Documentation",
+  "version": "1.0.0",
+  "description": "Python client library for controlling robots through KOS",
+  "classes": {
+    "KOS": {
+      "description": "Main client class for interacting with KOS",
+      "constructor": {
+        "description": "Initialize KOS client",
+        "parameters": {
+          "ip": {
+            "type": "string",
+            "description": "IP address of the robot running KOS",
+            "default": "localhost"
+          },
+          "port": {
+            "type": "integer",
+            "description": "Port of the robot running KOS",
+            "default": 50051
+          }
+        },
+        "example": "kos = KOS(ip='192.168.1.100', port=50051)"
+      },
+      "methods": {
+        "get_imu_data": {
+          "description": "Get IMU sensor data",
+          "returns": {
+            "type": "IMUResponse",
+            "description": "Current IMU sensor readings"
+          },
+          "example": "data = kos.get_imu_data()"
+        },
+        "get_actuator_state": {
+          "description": "Get actuator state",
+          "returns": {
+            "type": "ActuatorResponse",
+            "description": "Current actuator state"
+          },
+          "example": "state = kos.get_actuator_state()"
+        }
+      }
+    },
+    "IMUServiceClient": {
+      "description": "Client for interacting with IMU services",
+      "methods": {
+        "get_imu_values": {
+          "description": "Get the latest IMU sensor values",
+          "returns": {
+            "type": "IMUValuesResponse",
+            "description": "The latest IMU sensor values"
+          },
+          "example": "values = kos.imu.get_imu_values()"
+        },
+        "get_quaternion": {
+          "description": "Get the latest quaternion orientation",
+          "returns": {
+            "type": "QuaternionResponse",
+            "description": "The latest quaternion"
+          },
+          "example": "quat = kos.imu.get_quaternion()"
+        }
+      }
+    }
+  },
+  "types": {
+    "IMUResponse": {
+      "description": "IMU service response model.",
+      "properties": {
+        "acceleration": {
+          "description": "Acceleration values in m/s^2",
+          "items": {
+            "type": "number"
+          },
+          "title": "Acceleration",
+          "type": "array"
+        },
+        "angular_velocity": {
+          "description": "Angular velocity values in rad/s",
+          "items": {
+            "type": "number"
+          },
+          "title": "Angular Velocity",
+          "type": "array"
+        },
+        "orientation": {
+          "description": "Orientation quaternion",
+          "items": {
+            "type": "number"
+          },
+          "title": "Orientation",
+          "type": "array"
+        }
+      },
+      "required": [
+        "acceleration",
+        "angular_velocity",
+        "orientation"
+      ],
+      "title": "IMUResponse",
+      "type": "object"
+    },
+    "ActuatorResponse": {
+      "description": "Actuator service response model.",
+      "properties": {
+        "position": {
+          "description": "Current position",
+          "title": "Position",
+          "type": "number"
+        },
+        "velocity": {
+          "description": "Current velocity",
+          "title": "Velocity",
+          "type": "number"
+        },
+        "torque": {
+          "description": "Current torque",
+          "title": "Torque",
+          "type": "number"
+        }
+      },
+      "required": [
+        "position",
+        "velocity",
+        "torque"
+      ],
+      "title": "ActuatorResponse",
+      "type": "object"
+    }
+  }
+}

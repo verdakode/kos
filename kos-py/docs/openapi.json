@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "PyKOS API Documentation",
-    "description": "Python client for controlling robots through KOS",
+    "title": "PyKOS Python Client Documentation",
+    "description": "Python client library for controlling robots through KOS",
     "version": "1.0.0",
     "x-readme": {
       "samples-languages": [
@@ -26,9 +26,8 @@
     }
   },
   "paths": {
-    "/KOS.__init__": {
-      "post": {
-        "operationId": "initialize",
+    "/python/kos/init": {
+      "get": {
         "tags": [
           "Setup"
         ],
@@ -44,14 +43,13 @@
         }
       }
     },
-    "/imu/values": {
+    "/python/imu/values": {
       "get": {
-        "operationId": "get_imu_values",
         "tags": [
           "IMU"
         ],
         "summary": "Get IMU Values",
-        "description": "Get the latest IMU sensor values including acceleration and angular velocity",
+        "description": "Get the latest IMU sensor values",
         "x-readme": {
           "code-samples": [
             {
@@ -59,78 +57,18 @@
               "code": "values = kos.imu.get_imu_values()"
             }
           ]
-        }
-      }
-    },
-    "/imu/quaternion": {
-      "get": {
-        "operationId": "get_quaternion",
-        "tags": [
-          "IMU"
-        ],
-        "summary": "Get Quaternion",
-        "description": "Get the latest quaternion orientation",
-        "x-readme": {
-          "code-samples": [
-            {
-              "language": "python",
-              "code": "quat = kos.imu.get_quaternion()"
+        },
+        "responses": {
+          "200": {
+            "description": "Current IMU sensor readings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IMUResponse"
+                }
+              }
             }
-          ]
-        }
-      }
-    },
-    "/imu/zero": {
-      "post": {
-        "operationId": "zero_imu",
-        "tags": [
-          "IMU"
-        ],
-        "summary": "Zero IMU",
-        "description": "Zero the IMU with optional parameters",
-        "x-readme": {
-          "code-samples": [
-            {
-              "language": "python",
-              "code": "# Basic zeroing\nkos.imu.zero()\n\n# Advanced zeroing\nkos.imu.zero(\n    duration=2.0,\n    max_retries=3,\n    max_angular_error=0.1\n)"
-            }
-          ]
-        }
-      }
-    },
-    "/actuator/calibrate": {
-      "post": {
-        "operationId": "calibrate_actuator",
-        "tags": [
-          "Actuator"
-        ],
-        "summary": "Calibrate Actuator",
-        "description": "Calibrate a specific actuator",
-        "x-readme": {
-          "code-samples": [
-            {
-              "language": "python",
-              "code": "metadata = kos.actuator.calibrate(actuator_id=1)"
-            }
-          ]
-        }
-      }
-    },
-    "/actuator/command": {
-      "post": {
-        "operationId": "command_actuators",
-        "tags": [
-          "Actuator"
-        ],
-        "summary": "Command Actuators",
-        "description": "Send commands to multiple actuators",
-        "x-readme": {
-          "code-samples": [
-            {
-              "language": "python",
-              "code": "commands = [\n    {\"actuator_id\": 1, \"position\": 1.57},\n    {\"actuator_id\": 2, \"torque\": 0.5}\n]\nkos.actuator.command_actuators(commands)"
-            }
-          ]
+          }
         }
       }
     }
@@ -198,21 +136,6 @@
           "torque"
         ],
         "title": "ActuatorResponse",
-        "type": "object"
-      },
-      "CalibrationMetadata": {
-        "description": "Calibration metadata model.",
-        "properties": {
-          "status": {
-            "description": "Current calibration status",
-            "title": "Status",
-            "type": "string"
-          }
-        },
-        "required": [
-          "status"
-        ],
-        "title": "CalibrationMetadata",
         "type": "object"
       }
     }
