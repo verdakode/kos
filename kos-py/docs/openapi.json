@@ -1,0 +1,72 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PyKOS API Documentation",
+    "description": "Python client for controlling robots through KOS",
+    "version": "1.0.0",
+    "x-readme": {
+      "samples-languages": [
+        "python"
+      ],
+      "explorer-enabled": true,
+      "categories": [
+        {
+          "name": "IMU",
+          "description": "IMU sensor operations"
+        },
+        {
+          "name": "Actuator",
+          "description": "Actuator control operations"
+        }
+      ]
+    }
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "IMUResponse": {
+        "type": "object",
+        "properties": {
+          "acceleration": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Acceleration values in m/s^2"
+          },
+          "angular_velocity": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Angular velocity values in rad/s"
+          },
+          "orientation": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Orientation quaternion"
+          }
+        }
+      },
+      "ActuatorResponse": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "number",
+            "description": "Current position"
+          },
+          "velocity": {
+            "type": "number",
+            "description": "Current velocity"
+          },
+          "torque": {
+            "type": "number",
+            "description": "Current torque"
+          }
+        }
+      }
+    }
+  }
+}

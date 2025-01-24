@@ -86,3 +86,12 @@ convention = "google"
 
 requires = ["setuptools>=42", "wheel", "setuptools-rust>=1.5.2", "mypy-protobuf"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "pykos"
+dynamic = ["version", "readme", "requires-python", "authors", "scripts", "optional-dependencies"]
+description = "Python client for KOS"
+dependencies = [
+    "fastapi>=0.110.0",
+    "pydantic>=2.0.0"
+]

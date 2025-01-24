@@ -1,6 +1,7 @@
 """IMU service client."""
 
 from typing import NotRequired, TypedDict, Unpack
+from pydantic import BaseModel, Field
 
 import grpc
 from google.longrunning import operations_pb2_grpc
@@ -49,6 +50,24 @@ def _duration_from_seconds(seconds: float) -> Duration:
     duration.seconds = int(seconds)
     duration.nanos = int((seconds - int(seconds)) * 1e9)
     return duration
+
+
+class IMUValuesResponse(BaseModel):
+    """IMU basic values response."""
+    accel_x: float = Field(..., description="X-axis acceleration in m/s²")
+    accel_y: float = Field(..., description="Y-axis acceleration in m/s²")
+    accel_z: float = Field(..., description="Z-axis acceleration in m/s²")
+    gyro_x: float = Field(..., description="X-axis angular velocity in rad/s")
+    gyro_y: float = Field(..., description="Y-axis angular velocity in rad/s")
+    gyro_z: float = Field(..., description="Z-axis angular velocity in rad/s")
+
+
+class QuaternionResponse(BaseModel):
+    """IMU quaternion response."""
+    w: float = Field(..., description="Quaternion w component")
+    x: float = Field(..., description="Quaternion x component")
+    y: float = Field(..., description="Quaternion y component")
+    z: float = Field(..., description="Quaternion z component")
 
 
 class IMUServiceClient:

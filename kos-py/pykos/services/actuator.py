@@ -1,6 +1,7 @@
 """Actuator service client."""
 
 from typing import NotRequired, TypedDict, Unpack
+from pydantic import BaseModel, Field
 
 import grpc
 from google.longrunning import operations_pb2, operations_pb2_grpc
@@ -58,6 +59,23 @@ class CalibrationMetadata:
 
     def __repr__(self) -> str:
         return self.__str__()
+
+
+class ActuatorCommandModel(BaseModel):
+    """Actuator command model."""
+    actuator_id: int = Field(..., description="ID of the actuator")
+    position: float | None = Field(None, description="Target position in radians")
+    velocity: float | None = Field(None, description="Target velocity in rad/s")
+    torque: float | None = Field(None, description="Target torque in Nm")
+
+
+class ActuatorConfigModel(BaseModel):
+    """Actuator configuration model."""
+    actuator_id: int = Field(..., description="ID of the actuator")
+    kp: float | None = Field(None, description="Position gain")
+    kd: float | None = Field(None, description="Velocity gain")
+    ki: float | None = Field(None, description="Integral gain")
+    max_torque: float | None = Field(None, description="Maximum torque limit")
 
 
 class ActuatorServiceClient:

@@ -1,6 +1,8 @@
 """KOS client."""
 
 import grpc
+from pydantic import ValidationError
+from .openapi import IMUResponse, ActuatorResponse
 
 from pykos.services.actuator import ActuatorServiceClient
 from pykos.services.imu import IMUServiceClient
@@ -16,6 +18,8 @@ class KOS:
 
     Attributes:
         imu (IMUServiceClient): Client for the IMU service.
+        actuator (ActuatorServiceClient): Client for the actuator service.
+        process_manager (ProcessManagerServiceClient): Client for the process manager service.
     """
 
     def __init__(self, ip: str = "localhost", port: int = 50051) -> None:
@@ -25,6 +29,24 @@ class KOS:
         self.imu = IMUServiceClient(self.channel)
         self.actuator = ActuatorServiceClient(self.channel)
         self.process_manager = ProcessManagerServiceClient(self.channel)
+
+    def get_imu_data(self) -> IMUResponse:
+        """Get IMU sensor data.
+        
+        Returns:
+            IMUResponse: Current IMU sensor readings
+        """
+        data = self.imu.get_data()
+        return IMUResponse(**data)
+
+    def get_actuator_state(self) -> ActuatorResponse:
+        """Get actuator state.
+        
+        Returns:
+            ActuatorResponse: Current actuator state
+        """
+        state = self.actuator.get_state()
+        return ActuatorResponse(**state)
 
     def close(self) -> None:
         """Close the gRPC channel."""
