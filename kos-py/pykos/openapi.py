@@ -95,6 +95,84 @@ def generate_docs(output_path: str = "docs/openapi.json"):
         }
     })
     
+    # Add paths for the API endpoints
+    openapi_spec["paths"] = {
+        "/imu/values": {
+            "get": {
+                "tags": ["IMU"],
+                "summary": "Get IMU Values",
+                "description": "Get the latest IMU sensor values",
+                "responses": {
+                    "200": {
+                        "description": "Current IMU sensor readings",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/IMUResponse"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/imu/quaternion": {
+            "get": {
+                "tags": ["IMU"],
+                "summary": "Get Quaternion",
+                "description": "Get the latest quaternion orientation",
+                "responses": {
+                    "200": {
+                        "description": "Current quaternion orientation",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/IMUResponse"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/actuator/state": {
+            "get": {
+                "tags": ["Actuator"],
+                "summary": "Get Actuator State",
+                "description": "Get current actuator state",
+                "responses": {
+                    "200": {
+                        "description": "Current actuator state",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/ActuatorResponse"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/actuator/command": {
+            "post": {
+                "tags": ["Actuator"],
+                "summary": "Command Actuators",
+                "description": "Send commands to multiple actuators",
+                "requestBody": {
+                    "required": True,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {"$ref": "#/components/schemas/ActuatorCommandModel"}
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Commands sent successfully"
+                    }
+                }
+            }
+        }
+    }
+    
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, 'w') as f:
         json.dump(openapi_spec, f, indent=2)

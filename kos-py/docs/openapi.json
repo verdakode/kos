@@ -21,7 +21,98 @@
       ]
     }
   },
-  "paths": {},
+  "paths": {
+    "/imu/values": {
+      "get": {
+        "tags": [
+          "IMU"
+        ],
+        "summary": "Get IMU Values",
+        "description": "Get the latest IMU sensor values",
+        "responses": {
+          "200": {
+            "description": "Current IMU sensor readings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IMUResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/imu/quaternion": {
+      "get": {
+        "tags": [
+          "IMU"
+        ],
+        "summary": "Get Quaternion",
+        "description": "Get the latest quaternion orientation",
+        "responses": {
+          "200": {
+            "description": "Current quaternion orientation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IMUResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actuator/state": {
+      "get": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Get Actuator State",
+        "description": "Get current actuator state",
+        "responses": {
+          "200": {
+            "description": "Current actuator state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActuatorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actuator/command": {
+      "post": {
+        "tags": [
+          "Actuator"
+        ],
+        "summary": "Command Actuators",
+        "description": "Send commands to multiple actuators",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ActuatorCommandModel"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Commands sent successfully"
+          }
+        }
+      }
+    }
+  },
   "components": {
     "schemas": {
       "IMUResponse": {
